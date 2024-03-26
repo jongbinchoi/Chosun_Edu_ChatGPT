@@ -5,14 +5,8 @@ from langchain.schema import HumanMessage, AIMessage, SystemMessage
 import os
 from dotenv import load_dotenv, find_dotenv #.env 파일에서 환경 변수를 로드 하는데 사용
 from langchain.callbacks import StreamingStdOutCallbackHandler # AI의 답변 생성 과정을 실시간으로 출력하는 콜백 핸들러
+from langchain.prompts.example_selector.base import BaseExampleSelector
 
-
-#Fewshot Learning
-# - 적은 데이터로 학습하는 방법
-# - 모델에게 생성하는 대답의 예제를 전달
-# - 기본적인 messages(ststem)을 활용한 엔지니어링보다 훨씬 더 강력한 성능을 보임 (레포트 양식을 준 개념)
-# - 즉, prompt 작성보다 예제를 보여주는 fewshot이 훨씬 더 좋음
-# - 대화기록 등 DB에서 가져와서 fewshot 사용
 
 _ = load_dotenv(find_dotenv()) 
 
@@ -62,7 +56,8 @@ example_prompt =PromptTemplate.from_template(
 
 prompt = FewShotPromptTemplate(
     example_prompt=example_prompt,
-    examples=examples,
+    #examples=examples, 전체 예제 모두 활용
+    example_selector=example_selector, #랜덤하게 예제 선택 활용
     suffix="Human: What do you know about {country}?",
     input_variables=["country"],
 )
@@ -71,3 +66,18 @@ chain = prompt | chat
 chain.invoke({
     "country": "vietnam"
 })
+
+#RandomSelector 설계 
+class RandomExampleSelector(BaseExampleSelector):
+    def __init__(self, examples):
+        self.examples = examples
+    
+    def add_example(slef,example):
+        self.examples.append(example)
+    
+    def select_examples(self, input_variables):
+        from random import choice
+        return [choice(self.examples)]
+    
+    #RanddomExampleSelector 생성
+    example_selector = RandomExampleSelector(examples=examples)

@@ -1,3 +1,4 @@
-Open AI
+Openai
 Langchain
 python-dotenv
+tiktoken

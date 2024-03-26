@@ -22,7 +22,7 @@ completion = client.chat.completions.create(
   model="gpt-3.5-turbo",
   messages=[
     {"role": "system", "content": ""},
-    {"role": "user", "content": "클라우드 알려줘"}
+    {"role": "user", "content": ""}
   ]
 )
 
